@@ -1,0 +1,41 @@
+{
+  "private": true,
+  "author": "michael.sl <michael.sl@antgroup.com>",
+  "scripts": {
+    "build": "max build",
+    "dev": "max dev",
+    "format": "prettier --cache --write .",
+    "postinstall": "max setup",
+    "prepare": "husky install",
+    "setup": "max setup",
+    "start": "npm run dev"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,css,less}": [
+      "umi lint"
+    ]
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.3.0",
+    "@ant-design/pro-chat": "^1.9.1",
+    "@ant-design/pro-components": "^2.6.49",
+    "@monaco-editor/react": "^4.6.0",
+    "@umijs/max": "^4.1.1",
+    "antd": "^5.14.1",
+    "antd-style": "^3.6.1",
+    "immer": "^10.0.3",
+    "moment": "^2.30.1",
+    "react-intersection-observer": "^9.8.0",
+    "use-immer": "^0.9.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.56",
+    "@types/react-dom": "^18.2.19",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "prettier-plugin-organize-imports": "^3.2.4",
+    "prettier-plugin-packagejson": "^2.4.11",
+    "typescript": "^5.3.3"
+  }
+}
