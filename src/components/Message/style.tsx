@@ -52,6 +52,11 @@ function useStyle(props: MessageBaseProps) {
           }
         }
 
+        &__body {
+          padding: 12px 16px;
+          line-height: 1.5;
+        }
+
         &__footer {
           display: flex;
           margin-top: 4px;

@@ -225,7 +225,7 @@ const Input: React.ForwardRefRenderFunction<
               value={value}
               onChange={onInputChange}
               onKeyDown={onInputKeyDown}
-              bordered={false}
+              variant='borderless'
               className={`${style['input']}__textarea ${
                 textAreaProps.className || ''
               }`}

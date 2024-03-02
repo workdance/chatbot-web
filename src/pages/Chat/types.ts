@@ -74,3 +74,15 @@ export type ChatHistoryEntity = {
   gmtCreate: string;
   gmtModified: string;
 };
+
+
+export type BrainEntity = {
+  id: string;
+  brainId: UUID;
+  name: string;
+  description: string;
+  brainType: string;
+  userId?: string;
+  gmtCreate: string;
+  gmtModified: string;
+};

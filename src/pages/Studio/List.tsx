@@ -1,8 +1,9 @@
 import { ProList } from '@ant-design/pro-components';
 import { Button, Space, Tag } from 'antd';
-import { useState } from 'react';
-import { Link } from '@umijs/max';
+import { useEffect, useState } from 'react';
+import { Link, useModel } from '@umijs/max';
 import React from 'react';
+import { BrainEntity } from '../Chat/types';
 
 const defaultData = [
   {
@@ -35,15 +36,19 @@ const defaultData = [
   },
 ];
 
-type DataItem = (typeof defaultData)[number];
 
 export default () => {
-  const [dataSource, setDataSource] = useState<DataItem[]>(defaultData);
+  const { brainListViewModel, updateBrainListViewModel, renderBrainList } = useModel('Studio.brainListViewModel');
+
+  useEffect(() => {
+    renderBrainList({ brainId: '' });
+  }, []);
+  
   return (
-    <ProList<DataItem>
+    <ProList<BrainEntity>
       rowKey="id"
       headerTitle="基础列表"
-      dataSource={dataSource}
+      dataSource={brainListViewModel.brainList}
       showActions="hover"
       toolBarRender={() => {
         return [
@@ -60,7 +65,7 @@ export default () => {
           return true;
         },
       }}
-      onDataSourceChange={setDataSource}
+      // onDataSourceChange={updateBrainListViewModel}
       metas={{
         title: {
           dataIndex: 'name',
@@ -70,28 +75,21 @@ export default () => {
           editable: false,
         },
         description: {
-          dataIndex: 'desc',
+          dataIndex: 'description',
         },
         subTitle: {
-          render: () => {
+          dataIndex: 'brainType',
+          render: (_, record) => {
             return (
               <Space size={0}>
-                <Tag color="blue">Ant Design</Tag>
-                <Tag color="#5BD8A6">TechUI</Tag>
+                <Tag color="blue">{record.brainType}</Tag>
               </Space>
             );
           },
         },
         actions: {
           render: (text, row, index, action) => [
-            <a
-              onClick={() => {
-                action?.startEditable(row.id);
-              }}
-              key="link"
-            >
-              编辑
-            </a>,
+            <Link to={`/studio/${row.brainId}`} key="link">编辑</Link>
           ],
         },
       }}

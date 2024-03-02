@@ -1,26 +1,24 @@
-import { ChatEntity, ChatMessageItem } from '@/pages/Chat/types';
+import { BrainEntity } from '@/pages/Chat/types';
 import { request } from '@umijs/max';
 
 interface IBaseResponse {
   success: boolean;
 }
 
-interface IChatMessageResponse extends IBaseResponse {
-  data: ChatEntity
+interface IBrainResponse extends IBaseResponse {
+  data: BrainEntity
 }
 
-interface IChatLIstResponse extends IBaseResponse {
-  data: ChatEntity[]
+interface IBrainListResponse extends IBaseResponse {
+  data: BrainEntity[]
 }
 
-export async function queryChatList(
+export async function queryBrainList(
   params: {
-    // path
-    chatId?: string;
   },
   options?: { [key: string]: any },
 ) {
-  return request<IChatLIstResponse>(`/api/v1/chat/list`, {
+  return request<IBrainListResponse>(`/api/v1/brain/list`, {
     method: 'POST',
     data: { ...params },
     ...(options || {}),
@@ -35,7 +33,7 @@ export async function removeChatList(
   options?: { [key: string]: any },
 ) {
   const { id: chatId } = params;
-  return request<IChatLIstResponse>(`/api/v1/chat/${chatId}`, {
+  return request<IBrainListResponse>(`/api/v1/chat/${chatId}`, {
     method: 'DELETE',
     data: { ...params },
     ...(options || {}),
@@ -51,7 +49,7 @@ export async function updateChatItemById(
   options?: { [key: string]: any },
 ) {
   const { id: chatId } = params;
-  return request<IChatLIstResponse>(`/api/v1/chat/${chatId}`, {
+  return request<IBrainListResponse>(`/api/v1/chat/${chatId}`, {
     method: 'PUT',
     data: { ...params },
     ...(options || {}),
@@ -66,12 +64,27 @@ export async function createBrain(
   },
   options?: { [key: string]: any },
 ) {
-  return request<IChatMessageResponse>('/api/v1/brain/add', {
+  return request<IBrainResponse>('/api/v1/brain/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+export async function getBrainDetail(
+  params: {
+    // path
+    brainId?: string;
+  },
+  options?: { [key: string]: any },
+) {
+  const { brainId: param0 } = params;
+  return request<IBrainResponse>(`/api/v1/brain/${param0}`, {
+    method: 'GET',
+    params: { ...params },
     ...(options || {}),
   });
 }

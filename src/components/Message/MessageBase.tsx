@@ -199,7 +199,7 @@ const MessageBase: React.FunctionComponent<MessageBaseProps> = (props) => {
   function renderMsgMain() {
     return (
       <div className={`${styles.message}__content__main content__main`}>
-        <div id={msgContentDomId}>{children}</div>
+        <div id={msgContentDomId} className={`${styles.message}__content__body`}>{children}</div>
         {actions && (
           <div className={'message_content_main_actions'}>{actions}</div>
         )}

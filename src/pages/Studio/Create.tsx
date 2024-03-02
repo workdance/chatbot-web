@@ -15,6 +15,7 @@ import { message } from 'antd';
 import { useRef } from 'react';
 import React from 'react';
 import { createBrain } from '@/services/BrainController';
+import { history } from '@umijs/max';
 
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
@@ -50,9 +51,10 @@ export default () => {
             name, description, brainTypes: cardRef.current,
           })
           if (rst.success) {
+            history.push('./list');
             message.success('提交成功');
           } else {
-            message.success('提交失败');
+            message.error('提交失败');
           }
         }}
         formProps={{

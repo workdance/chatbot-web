@@ -42,7 +42,7 @@ export default defineConfig({
       component: './Chat',
     },
     {
-      name: 'AI 大脑',
+      name: 'AI 知识库',
       path: '/studio',
       redirect: '/studio/list',
     },
@@ -62,7 +62,12 @@ export default defineConfig({
           path: 'create',
           name: 'Studio',
           component: './Studio/Create',
-        }
+        },
+        {
+          path: ':id',
+          name: 'Studio',
+          component: './Studio/Edit',
+        },
       ]
     },
     {
