@@ -3,39 +3,7 @@ import { Button, Space, Tag } from 'antd';
 import { useEffect, useState } from 'react';
 import { Link, useModel } from '@umijs/max';
 import React from 'react';
-import { BrainEntity } from '../Chat/types';
-
-const defaultData = [
-  {
-    id: '1',
-    name: '语雀的天空',
-    image:
-      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-    desc: '我是一条测试的描述',
-  },
-  {
-    id: '2',
-    name: 'Ant Design',
-    image:
-      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-    desc: '我是一条测试的描述',
-  },
-  {
-    id: '3',
-    name: '蚂蚁金服体验科技',
-    image:
-      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-    desc: '我是一条测试的描述',
-  },
-  {
-    id: '4',
-    name: 'TechUI',
-    image:
-      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-    desc: '我是一条测试的描述',
-  },
-];
-
+import { BrainEntity } from '../../types';
 
 export default () => {
   const { brainListViewModel, updateBrainListViewModel, renderBrainList } = useModel('Studio.brainListViewModel');
@@ -47,7 +15,7 @@ export default () => {
   return (
     <ProList<BrainEntity>
       rowKey="id"
-      headerTitle="基础列表"
+      headerTitle="知识库列表"
       dataSource={brainListViewModel.brainList}
       showActions="hover"
       toolBarRender={() => {

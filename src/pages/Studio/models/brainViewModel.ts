@@ -1,5 +1,5 @@
-import { BrainEntity } from '@/pages/Chat/types';
-import { getBrainDetail, queryBrain } from '@/services/BrainController';
+import { BrainEntity } from '@/types';
+import { getBrainDetail, queryBrain, updateBrainItemById } from '@/services/BrainController';
 import { history } from '@umijs/max';
 import moment from 'moment';
 import { useCallback } from 'react';
@@ -26,6 +26,7 @@ async function removeBrainById({ id }: { id: string | undefined }) {
 export default function useBrainViewModel() {
   const [brainViewModel, updateBrainViewModel] = useImmer({
     brain: {} as BrainEntity,
+    currentBrain: {} as BrainEntity,
   });
 
   /**
@@ -44,6 +45,7 @@ export default function useBrainViewModel() {
           name: `${item.name}`,
           brainId: item.brainId,
           description: item.description,
+          model: item.model,
           brainType: item.brainType,
           "avatar": "https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png",
           gmtCreate: moment(item.gmtCreate).format('HH:mm'),
@@ -59,29 +61,30 @@ export default function useBrainViewModel() {
     [],
   );
 
-  async function updateBrainById({ id, BrainName }: {
+  async function updateBrainById({ id, name, model }: {
     id: string;
-    BrainName: string;
+    name: string;
+    model: string;
   }) {
-    // const rst = await updateBrainItemById({
-    //   id: id,
-    //   BrainName,
-    // });
+    const rst = await updateBrainItemById({
+      id: id,
+      name,
+      model
+    });
 
-    // if (rst.success) {
-    //   console.log('update success');
-    //   updateBrainViewModel(draft => {
-    //     draft.brain = draft.brain.map(item => {
-    //       return item;
-    //     })
-    //   })
-    // }
-    // return rst.success;
+    if (rst.success) {
+      console.log('update success');
+      updateBrainViewModel(draft => {
+        draft.brain.model = model
+      })
+    }
+    return rst.success;
   }
 
   return {
     brainViewModel,
-    updateBrainViewModel,
     renderBrain,
+    updateBrainViewModel,
+    updateBrainById,
   };
 }

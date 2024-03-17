@@ -4,12 +4,14 @@ import {
   ProFormText,
   ProList,
 } from '@ant-design/pro-components';
-import { Divider, Skeleton, Space, Tabs, TabsProps, Tag, Upload, UploadProps, message } from 'antd';
+import { Divider, List, Skeleton, Space, Tabs, TabsProps, Tag, Typography, Upload, UploadProps, message } from 'antd';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { useModel, useParams } from '@umijs/max';
 import styles from './index.module.less'
 import { InboxOutlined } from '@ant-design/icons';
+import { UPLOAD_URL } from '@/constants';
+import { createKnowledge } from '@/services/KnowledgeController';
 const { Dragger } = Upload;
 
 const onChange = (key: string) => {
@@ -17,8 +19,9 @@ const onChange = (key: string) => {
 };
 
 const SettingTabPanel = () => {
-  const { brainViewModel, renderBrain } = useModel('Studio.brainViewModel');
-  const { id } = useParams();
+  const { brainViewModel, renderBrain, updateBrainById } = useModel('Studio.brainViewModel');
+  const params = useParams();
+  const id = params.id as string;
   useEffect(() => {
     renderBrain({ brainId: id })
   }, []);
@@ -35,11 +38,17 @@ const SettingTabPanel = () => {
       onFinish={async (values: any) => {
         // await waitTime(2000);
         console.log(values);
+        updateBrainById({
+          id,
+          name: values.name,
+          model: values.model
+        })
         message.success('提交成功');
       }}
       initialValues={{
         name: brainViewModel.brain.name,
         description: brainViewModel.brain.description,
+        model: brainViewModel.brain.model,
         useMode: 'chapter',
       }}
     >
@@ -68,6 +77,14 @@ const SettingTabPanel = () => {
               value: 'llama2',
               label: 'llama2',
             },
+            {
+              value: 'qwen:14b',
+              label: 'qwen:14b',
+            },
+            {
+              value: 'gemma:7b',
+              label: 'gemma:7b',
+            },
           ]}
           // readonly
           width="md"
@@ -76,116 +93,86 @@ const SettingTabPanel = () => {
         />
       </ProForm.Group>
     </ProForm>
-    <Divider>提示设置</Divider>
+    {/* <Divider>提示设置</Divider> */}
   </div>
 }
 
-
-
-const defaultData = [
-  {
-    id: '1',
-    name: '语雀的天空',
-    image:
-      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-    desc: '我是一条测试的描述',
-  },
-  {
-    id: '2',
-    name: 'Ant Design',
-    image:
-      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-    desc: '我是一条测试的描述',
-  },
-  {
-    id: '3',
-    name: '蚂蚁金服体验科技',
-    image:
-      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-    desc: '我是一条测试的描述',
-  },
-  {
-    id: '4',
-    name: 'TechUI',
-    image:
-      'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-    desc: '我是一条测试的描述',
-  },
-];
-
-type DataItem = (typeof defaultData)[number];
 const KnowledgePanel = () => {
-  const [dataSource, setDataSource] = useState<DataItem[]>(defaultData);
-const props: UploadProps = {
-  name: 'file',
-  multiple: true,
-  action: 'https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188',
-  onChange(info) {
-    const { status } = info.file;
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
+  const { brainViewModel } = useModel('Studio.brainViewModel');
+  const { knowledgeModel, renderKnowledge, removeKnowledgeById } = useModel('Studio.knowledgeViewModel');
+  const brainId = brainViewModel.brain.brainId;
+
+  async function doCreateKnowledge(info: any) {
+    const rst = await createKnowledge({
+      name: info.file.name,
+      brainId,
+      url: info.file.response.data.filePath
+    })
+    if (rst.success) {
+      message.success(`${info.file.name} 上传成功.`);
+      renderKnowledge({
+        brainId,
+      })
     }
-    if (status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-  onDrop(e) {
-    console.log('Dropped files', e.dataTransfer.files);
-  },
-};
+  }
+  const props: UploadProps = {
+    name: 'uploadFile',
+    multiple: true,
+    action: UPLOAD_URL + "?brain_id=" + brainViewModel.brain.brainId,
+    onChange(info) {
+      const { status } = info.file;
+      if (status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (status === 'done') {
+        doCreateKnowledge(info)
+      } else if (status === 'error') {
+        message.error(`${info.file.name} 上传失败.`);
+      }
+    },
+    onDrop(e) {
+      console.log('Dropped files', e.dataTransfer.files);
+    },
+  };
+
+  useEffect(() => {
+    renderKnowledge({
+      brainId,
+    })
+  }, [])
+
+  const handleDelteKnowledge = (id: string) => {
+    removeKnowledgeById({
+      id,
+      brainId,
+    })
+  }
+
+
   return <div className={styles.knowledgePanel}>
     <Divider>上传区</Divider>
     <Dragger {...props}>
-    <p className="ant-upload-drag-icon">
-      <InboxOutlined />
-    </p>
-    <p className="ant-upload-text">点击或拖拽文件至此区域即可上传</p>
-    <p className="ant-upload-hint">
-    查看、下载或删除您大脑使用的知识
-    </p>
-  </Dragger>
-  <Divider>已上传的知识库</Divider>
-  <ProList<DataItem>
-      rowKey="id"
-      headerTitle="基础列表"
-      dataSource={dataSource}
-      showActions="hover"
-      editable={{
-        onSave: async (key, record, originRow) => {
-          console.log(key, record, originRow);
-          return true;
-        },
-      }}
-      onDataSourceChange={setDataSource}
-      metas={{
-        title: {
-          dataIndex: 'name',
-        },
-        subTitle: {
-          render: () => {
-            return (
-              <Space size={0}>
-                <Tag color="blue">Ant Design</Tag>
-                <Tag color="#5BD8A6">TechUI</Tag>
-              </Space>
-            );
-          },
-        },
-        actions: {
-          render: (text, row, index, action) => [
-            <a
-              onClick={() => {
-                action?.startEditable(row.id);
-              }}
-              key="link"
-            >
-              编辑
-            </a>,
-          ],
-        },
-      }}
+      <p className="ant-upload-drag-icon">
+        <InboxOutlined />
+      </p>
+      <p className="ant-upload-text">点击或拖拽文件至此区域即可上传</p>
+      <p className="ant-upload-hint">
+        查看、下载或删除您大脑使用的知识
+      </p>
+    </Dragger>
+    <Divider>已上传的文件</Divider>
+    <List
+      bordered
+      dataSource={knowledgeModel.list}
+      renderItem={(item) => (
+        <List.Item
+          actions={[<a key="list-loadmore-edit" onClick={() => {
+            handleDelteKnowledge(item.id)
+          }}>删除</a>]}
+        >
+        {item.name}
+        </List.Item>
+      )}
     />
   </div>
 }
@@ -201,12 +188,12 @@ const items: TabsProps['items'] = [
   {
     key: '3',
     label: '知识库',
-    children: <KnowledgePanel/>
+    children: <KnowledgePanel />
   },
 ];
 
 const App: React.FC = () => <div>
-  <h5 className={styles.studioTitle}>我的大脑</h5>
+  <h5 className={styles.studioTitle}>我的知识库</h5>
   <section className={styles.sectionContent}>
     <Tabs centered defaultActiveKey="1" items={items} onChange={onChange} />
   </section>

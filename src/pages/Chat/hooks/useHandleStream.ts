@@ -1,73 +1,87 @@
-import { ChatMessage } from "../types";
-import { useModel } from "@umijs/max";
+import { useModel } from '@umijs/max';
+import { ChatMessage } from '../../../types';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useHandleStream = () => {
-  const { updateStreamingHistory } = useModel("Chat.chatViewModel");
+  const { updateStreamingHistory } = useModel('Chat.chatViewModel');
 
   const handleStream = async (
+    reader: ReadableStreamDefaultReader<Uint8Array>,
     args: {
-      messageId: string
-      question: string,
-      reader: ReadableStreamDefaultReader<Uint8Array>,
+      chatId: string;
+      messageId: string;
+      question: string;
     },
     onFirstChunk: () => void,
-    onStreamDone: (allChunk: string) => void
+    onStreamDone: (allChunk: string) => void,
   ): Promise<void> => {
-    const { question, reader, messageId } = args;
-    const decoder = new TextDecoder("utf-8");
+    const decoder = new TextDecoder('utf-8');
     let isFirstChunk = true;
-    let incompleteData = "";
+    let incompleteData = '';
     let assistantChunk = '';
 
+    console.info('handleStreamhandleStream', reader);
     const handleStreamRecursively = async () => {
-      const { done, value } = await reader.read();
-
-      if (done) {
-        if (incompleteData !== "") {
-          // Try to parse any remaining incomplete data
-
-          try {
-            const parsedData = JSON.parse(incompleteData) as ChatMessage;
-            updateStreamingHistory(parsedData);
-          } catch (e) {
-            console.error("Error parsing incomplete data", e);
-          }
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          onStreamDone && onStreamDone(assistantChunk);
+          break; // 读取完毕
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        onStreamDone && onStreamDone(assistantChunk);
-        return;
+        if (isFirstChunk) {
+          isFirstChunk = false;
+          onFirstChunk();
+        }
+
+        const rawData =
+          incompleteData + decoder.decode(value, { stream: true });
+        // 这里有2中返回，一种是直接返回结果，一个是返回完整的数据，用 data:是否开头区分
+        if (rawData.includes('data:')) {
+          const dataStrings = rawData.trim().split('data:').filter(Boolean);
+          // eslint-disable-next-line @typescript-eslint/no-loop-func
+          dataStrings.forEach((data, index, array) => {
+            if (index === array.length - 1 && !data.endsWith('\n')) {
+              // Last item and does not end with a newline, save as incomplete
+              incompleteData = data;
+              return;
+            }
+            try {
+              const parsedData = JSON.parse(data) as ChatMessage;
+              console.info(parsedData);
+              assistantChunk+=parsedData.assistant;
+              updateStreamingHistory({
+                assistant: assistantChunk,
+                messageId: args.messageId,
+                chatId: args.chatId,
+                userMessage: args.question,
+              });
+            } catch (e) {
+              console.error('Error parsing data string', e);
+            }
+          });
+        } else {
+          const dataStrings = rawData.trim();
+          try {
+            const parsedData = JSON.parse(dataStrings);
+            assistantChunk += parsedData;
+            updateStreamingHistory(parsedData);
+          } catch (e) {
+            assistantChunk += dataStrings;
+            console.error('Error parsing data string', e);
+          }
+
+          if (assistantChunk) {
+            updateStreamingHistory({
+              chatId: args.chatId,
+              assistant: assistantChunk,
+              userMessage: args.question,
+              messageId: args.messageId,
+            });
+          }
+        }
       }
-
-      if (isFirstChunk) {
-        isFirstChunk = false;
-        onFirstChunk();
-      }
-
-
-      // Concatenate incomplete data with new chunk
-      const rawData = incompleteData + decoder.decode(value, { stream: true });
-      const dataStrings = rawData;
-
-      try {
-        const parsedData = JSON.parse(dataStrings);
-        assistantChunk+= parsedData;
-        updateStreamingHistory(parsedData);
-      } catch (e) {
-        assistantChunk+= dataStrings;
-        // console.error("Error parsing data string", e);
-      };
-
-      if (assistantChunk) {
-        updateStreamingHistory({
-          assistant: assistantChunk,
-          userMessage: question,
-          messageId,
-        });
-      }
-
-      await handleStreamRecursively();
     };
 
     await handleStreamRecursively();

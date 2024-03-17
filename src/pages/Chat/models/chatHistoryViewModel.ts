@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useModel, useParams } from "@umijs/max";
-import { queryChatHistoryByChatId } from '@/services/ChatController';
+import { queryChatHistoryByChatId } from '@/services/ChatHistoryController';
 
 
 export default function useChatHistory() {

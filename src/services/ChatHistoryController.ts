@@ -1,4 +1,4 @@
-import { ChatHistoryEntity } from '@/pages/Chat/types';
+import { ChatHistoryEntity } from '@/types';
 import { request } from '@umijs/max';
 
 interface IBaseResponse {
@@ -27,6 +27,7 @@ export async function createChatHistory(
   params: {
     chatId: string;
     question: string;
+    brainId?: string;
     assistant?: string;
   },
   options?: { [key: string]: any },

@@ -1,4 +1,4 @@
-import { ChatItem, ChatMessage } from "./types";
+import { ChatItem, ChatMessage } from "../../types";
 
 type GeneratePlaceHolderMessageProps = {
   userMessage: string;
@@ -14,7 +14,7 @@ export const generatePlaceHolderMessage = ({
     message_time: new Date(
       new Date().setDate(new Date().getDate() + 1)
     ).toISOString(),
-    assistant: "🧠",
+    assistant: "🧠...",
     chatId: chatId,
     userMessage,
   };

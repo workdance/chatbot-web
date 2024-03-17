@@ -1,4 +1,4 @@
-import { BrainEntity } from '@/pages/Chat/types';
+import { BrainEntity } from '@/types';
 import { request } from '@umijs/max';
 
 interface IBaseResponse {
@@ -41,15 +41,16 @@ export async function removeChatList(
 }
 
 
-export async function updateChatItemById(
+export async function updateBrainItemById(
   params: {
     id?: string;
-    chatName: string;
+    name: string;
+    model: string;
   },
   options?: { [key: string]: any },
 ) {
-  const { id: chatId } = params;
-  return request<IBrainListResponse>(`/api/v1/chat/${chatId}`, {
+  const { id: brainId } = params;
+  return request<IBrainListResponse>(`/api/v1/brain/${brainId}`, {
     method: 'PUT',
     data: { ...params },
     ...(options || {}),

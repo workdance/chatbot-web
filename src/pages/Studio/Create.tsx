@@ -67,7 +67,7 @@ export default () => {
           name: string;
         }>
           name="brainType"
-          title="选择大脑类型"
+          title="选择类型"
           onFinish={async () => {
             console.log(formRef.current?.getFieldsValue());
             
@@ -83,9 +83,9 @@ export default () => {
             }}
             defaultValue="A"
           >
-            <CheckCard title="本地大脑" description="上传文档或者网站链接" value="doc" />
+            <CheckCard title="本地知识库" description="上传文档或者网站链接" value="doc" />
             <CheckCard
-              title="远程大脑"
+              title="远程知识库"
               disabled
               description="通过 API 调用远程大脑（暂不支持）"
               value="api"
@@ -106,7 +106,7 @@ export default () => {
         >
           <ProFormText
             name="name"
-            label="大脑名称"
+            label="知识库名称"
             width="md"
             tooltip="最长为 24 位，用于标定的唯一 id"
             placeholder="请输入名称"
@@ -114,7 +114,7 @@ export default () => {
           />
           <ProFormTextArea
             name="description"
-            label="大脑描述"
+            label="知识库描述"
             width="lg"
             placeholder="请输入备注"
           />

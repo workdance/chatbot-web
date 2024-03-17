@@ -5,7 +5,7 @@ import Typing from '@/components/Typing';
 import { Col, Flex, Row } from 'antd';
 import { aiDefaultAvatar, userAvatar } from './constant';
 import useChatHistory from './models/chatHistoryViewModel';
-import { ChatMessage } from './types';
+import { ChatMessage } from '../../types';
 import ActionBar from './components/ActionBar';
 import { useModel } from '@umijs/max';
 import styles from './index.module.less';
@@ -37,7 +37,7 @@ const RobotMessage = (props: {
     return null;
   }
   return <div className={styles.messageWrap}>
-    <Message key={chatMessage.id} avatar={aiDefaultAvatar}   >
+    <Message avatar={aiDefaultAvatar}   >
       {chatMessage.assistant}
     </Message>
   </div>

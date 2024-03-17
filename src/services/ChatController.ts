@@ -1,28 +1,34 @@
-import { ChatEntity, ChatMessageItem } from '@/pages/Chat/types';
+import { getWorkId } from '@/common';
+import { AI_SERVER_URL } from '@/pages/Chat/constant';
+import { ChatEntity } from '@/types';
 import { request } from '@umijs/max';
+
+const workId = getWorkId();
 
 interface IBaseResponse {
   success: boolean;
 }
 
 interface IChatMessageResponse extends IBaseResponse {
-  data: ChatEntity
+  data: ChatEntity;
 }
 
 interface IChatLIstResponse extends IBaseResponse {
-  data: ChatEntity[]
+  data: ChatEntity[];
 }
 
 export async function queryChatList(
   params: {
-    // path
-    chatId?: string;
+    // chatId?: string;
   },
   options?: { [key: string]: any },
 ) {
   return request<IChatLIstResponse>(`/api/v1/chat/list`, {
     method: 'POST',
-    data: { ...params },
+    data: {
+      ...params,
+      workId,
+    },
     ...(options || {}),
   });
 }
@@ -30,7 +36,7 @@ export async function queryChatList(
 export async function removeChatList(
   params: {
     // path
-    id?: string;
+    id: string;
   },
   options?: { [key: string]: any },
 ) {
@@ -42,10 +48,9 @@ export async function removeChatList(
   });
 }
 
-
 export async function updateChatItemById(
   params: {
-    id?: string;
+    id: string;
     chatName: string;
   },
   options?: { [key: string]: any },
@@ -58,67 +63,58 @@ export async function updateChatItemById(
   });
 }
 
-export async function chatWithQuestion(
-  params: {
-    // path
-    chatId?: string;
-    questionId?: string;
-  },
-  options?: { [key: string]: any },
-) {
-  const { chatId } = params;
-  return fetch(`/api/v1/chat/${chatId}/question/stream`, {
-  // return request<API.Result_string_>(`/api/chat/${param0}/question/stream`, {
+export async function chatWithQuestion(params: {
+  question: string;
+  chat_id?: string;
+  brain_Id?: string;
+}) {
+  const { chat_id: chatId } = params;
+  return fetch(`${AI_SERVER_URL}/chat/${chatId}/question/stream`, {
+    // return request<API.Result_string_>(`/api/chat/${param0}/question/stream`, {
     method: 'POST',
     body: JSON.stringify(params),
-    ...(options || {}),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'text/event-stream',
+    },
   });
 }
-export async function chatToOllama(
+
+export function chatToOllamaGet(
   params: {
     question: string;
   },
   options?: { [key: string]: any },
 ) {
-
-  return fetch(`/ai/ollama`, {
-    method: 'POST',
-    body: JSON.stringify(params),
-    ...(options || {}),
-  });
+  return fetch(
+    `http://demo.test.alipay.net:5050/ollama?question=${params.question}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/event-stream',
+      },
+      ...(options || {}),
+    },
+  );
 }
 
-export async function chat(
-  params: {
-    // path
-    /** userId */
-    connectKey?: string;
-  },
-  options?: { [key: string]: any },
-) {
-  const { connectKey } = params;
-  return request(`/api/easy/stream?connectKey=${connectKey}`, {
-  // return request<API.Result_string_>(`/api/chat/${param0}/question/stream`, {
-    method: 'GET',
-    params: { ...params },
-    ...(options || {}),
-  });
-}
-
-export async function queryChatHistoryByChatId(
-  params: {
-    // path
-    chatId?: string;
-  },
-  options?: { [key: string]: any },
-) {
-  return request(`/api/v1/chatHistory/list`, {
-    method: 'POST',
-    data: { ...params },
-    ...(options || {}),
-  });
-}
-
+// export async function chatToOllama(
+//   params: {
+//     question: string;
+//   },
+//   options?: { [key: string]: any },
+// ) {
+//   return fetch(`/ai/ollama`, {
+//     method: 'POST',
+//     body: JSON.stringify(params),
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Accept: 'text/event-stream',
+//     },
+//     ...(options || {}),
+//   });
+// }
 
 export async function createChat(
   body?: {
@@ -131,7 +127,10 @@ export async function createChat(
     headers: {
       'Content-Type': 'application/json',
     },
-    data: body,
+    data: {
+      ...body,
+      workId: getWorkId(),
+    },
     ...(options || {}),
   });
 }

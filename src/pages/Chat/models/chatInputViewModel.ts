@@ -1,8 +1,8 @@
 import { useImmer } from 'use-immer';
 import { history } from '@umijs/max';
-import { createChat, chatToOllama } from '@/services/ChatController';
+import { createChat, chatToOllama, chatToOllamaGet, chatWithQuestion } from '@/services/ChatController';
 import { useHandleStream } from '../hooks/useHandleStream';
-import { ChatQuestion } from '../types';
+import { ChatQuestion } from '../../../types';
 import { generatePlaceHolderMessage, getChatNameFromQuestion } from '../utils';
 import { useModel } from '@umijs/max';
 import { useParams } from '@umijs/max';
@@ -14,7 +14,8 @@ export default function useChatInputViewModel() {
     message: '',
     assistant: '',
   });
-  const { chatViewModel, updateStreamingHistory, updateChatViewModel } = useModel('Chat.chatViewModel')
+  const { chatViewModel, updateStreamingHistory, updateChatViewModel } = useModel('Chat.chatViewModel');
+  const { brainViewModel } = useModel('Studio.brainViewModel')
   const { handleStream } = useHandleStream();
   const { id } = useParams();
 
@@ -26,14 +27,10 @@ export default function useChatInputViewModel() {
     chatId: string,
     chatQuestion: ChatQuestion,
   ) => {
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'text/event-stream',
-    };
-
     const { data } = await createChatHistory({
       chatId,
       question: chatQuestion.question,
+      brainId: chatQuestion.brain_id,
     });
 
     const placeHolderMessage = generatePlaceHolderMessage({
@@ -43,24 +40,21 @@ export default function useChatInputViewModel() {
 
     updateStreamingHistory(placeHolderMessage);
 
+
+    console.info('chatQuestion', chatQuestion)
     try {
-      // const response = await chatWithQuestion(
-      //   {
-      //     chatId: chatId,
-      //     ...chatQuestion,
-      //   },
-      //   {
-      //     headers,
-      //   },
-      // );
-      const response = await chatToOllama(
+      const response = await chatWithQuestion(
         {
-          question: chatQuestion.question || '',
-        },
-        {
-          headers,
+          chat_id: chatId,
+          // brain_Id: chatQuestion.brain_id,
+          ...chatQuestion,
         },
       );
+      // const response = await chatToOllamaGet(
+      //   {
+      //     question: chatQuestion.question || '',
+      //   }
+      // );
       if (!response.ok) {
         void handleFetchError(response);
         return;
@@ -70,11 +64,13 @@ export default function useChatInputViewModel() {
         throw new Error('resposeBodyNull');
       }
 
-      await handleStream({
-        messageId: data.messageId,
-        question: chatQuestion.question || '',
-        reader: response.body.getReader()
-      },
+      await handleStream(
+        response.body.getReader(),
+        {
+          chatId: chatId,
+          messageId: data.messageId,
+          question: chatQuestion.question || '',
+        },
         () => console.error(placeHolderMessage.messageId),
         (assistant: string) => {
           // 3.0 流执行完毕后，把完整的流数据传递给 prod 落库，更新 chatHistory 的 assistant 字段
@@ -130,7 +126,7 @@ export default function useChatInputViewModel() {
         question,
         // temperature: temperature,
         // max_tokens: maxTokens,
-        // brain_id: currentBrain?.id,
+        brain_id: brainViewModel.currentBrain?.brainId,
         // prompt_id: currentPromptId ?? undefined,
       };
 

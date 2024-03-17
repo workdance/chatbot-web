@@ -1,5 +1,5 @@
 import { useImmer } from "use-immer";
-import { ChatMessage } from '../types';
+import { ChatMessage } from '../../../types';
 
 export default function useChatViewModel() {
   const [chatViewModel, updateChatViewModel] = useImmer({
@@ -21,13 +21,15 @@ export default function useChatViewModel() {
           item.messageId === streamedChat.messageId
             ? {
                 ...item,
-                assistant: item.assistant + streamedChat.assistant,
+                assistant: streamedChat.assistant,
                 metadata: streamedChat.metadata,
               }
             : item
         )
       : [...prevHistory, streamedChat];
 
+
+    console.info('updatedHistoryupdatedHistory', updatedHistory)
     updateChatViewModel((draft) => {
       draft.chatMessageList = updatedHistory;
     });

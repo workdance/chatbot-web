@@ -18,12 +18,17 @@ export default defineConfig({
     '/ai': {
       target: 'http://demo.test.alipay.net:5050/',
       'pathRewrite': { '^/ai' : '' },
+      changeOrigin: true,
+      onProxyReq: (proxyRes, req, res) => {
+        res.on('close', () => proxyRes.destroy());
+      }
     }
   },
   routes: [
     {
       path: '/',
       redirect: '/chat',
+      access: 'canUse',
     },
     {
       name: '',
@@ -35,19 +40,23 @@ export default defineConfig({
       footerRender: false,
       // 不展示菜单
       menuRender: false,
+      access: 'canUse',
     },
     {
       name: 'AI 对话',
       path: '/chat',
       component: './Chat',
+      access: 'canUse',
     },
     {
-      name: 'AI 知识库',
+      name: 'AI 大脑',
       path: '/studio',
       redirect: '/studio/list',
+      access: 'canUse',
     },
     {
       path: 'studio',
+      access: 'canUse',
       routes: [
         {
           path: '',

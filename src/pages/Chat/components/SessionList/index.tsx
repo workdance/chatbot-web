@@ -1,17 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { List, ListProps, Operate } from '@/components';
 import AddButton from '../AddButton';
 import { useModel } from '@umijs/max';
-import { Divider } from 'antd';
+import { Divider, Modal } from 'antd';
 import { history } from '@umijs/max';
 import styles from './index.module.less';
 import { useParams } from '@umijs/max';
+import BrainSelector from '../BrainSelector';
+import { createChat } from '@/services/ChatController';
 
 
 const SessionList: React.FC = () => {
   const { chatListViewModel, start, updateChatListViewModel, handleItemClick} = useModel('Chat.chatListViewModel')
   const { updateChatViewModel } = useModel('Chat.chatViewModel');
   const { id } = useParams();
+  const [open, setOpen] = useState(false);
+  const showModal = () => {
+    setOpen(true);
+  };
+
   useEffect(() => {
     start({
       chatId: id,
@@ -41,16 +48,27 @@ const SessionList: React.FC = () => {
     })
   };
 
-  const handleBtnClick = () => {
-    history.push('/chat');
-    updateChatViewModel(draft => {
-      draft.chatId = '';
+  const handleBtnClick = async ({ chatName }) => {
+    const chat = await createChat({
+      chatName,
     });
+
+    if (chat.success) {
+      const currentChatId = chat.data.chatId;
+      updateChatViewModel(draft => {
+        draft.chatId = currentChatId;
+      })
+      history.push(`/chat/${currentChatId}`);
+      start({
+        chatId: currentChatId,
+      });
+    }
   }
 
   return (
     <div className={styles.sessionWrapper}>
-      <AddButton size='large' onClick={handleBtnClick}>开启新会话</AddButton>
+      <AddButton size='large' onClick={showModal}>开启新会话</AddButton>
+      <BrainSelector open={open} setOpen={setOpen} onBrainSelect={handleBtnClick}/>
       <Divider />
       <List data={chatListViewModel.chatList} onClick={onItemClick} />
     </div>

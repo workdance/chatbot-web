@@ -1,9 +1,10 @@
-import { BrainEntity } from '@/pages/Chat/types';
+import { BrainEntity } from '@/types';
 import { queryBrainList } from '@/services/BrainController';
 import { history } from '@umijs/max';
 import moment from 'moment';
 import { useCallback } from 'react';
 import { useImmer } from 'use-immer';
+import { useModel } from '@umijs/max';
 
 export enum Operate {
   checked = 'checked',
@@ -24,11 +25,12 @@ async function removeBrainListById({ id }: { id: string | undefined }) {
 }
 
 export default function useBrainListViewModel() {
+  const { brainViewModel, updateBrainViewModel } = useModel('Studio.brainViewModel');
   const [brainListViewModel, updateBrainListViewModel] = useImmer({
     brainList: [] as BrainEntity[],
   });
   const renderBrainList = useCallback(
-    ({ brainId }: { BrainId: string | undefined }) => {
+    () => {
       const init = async () => {
         const rst = await queryBrainList({});
         const list = rst.data;
@@ -37,9 +39,10 @@ export default function useBrainListViewModel() {
           return {
             id: item.id,
             name: `${item.name}`,
-            brainId: item.brainId,
+            brainId: String(item.brainId),
             description: item.description,
             brainType: item.brainType,
+            model: item.model,
             "avatar": "https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png",
             gmtCreate: moment(item.gmtCreate).format('HH:mm'),
             gmtModified: moment(item.gmtModified).format('HH:mm'),
@@ -48,6 +51,13 @@ export default function useBrainListViewModel() {
         updateBrainListViewModel((draft) => {
           draft.brainList = formatData;
         });
+
+        if (!brainViewModel.currentBrain.brainId) {
+          updateBrainViewModel((draft) => {
+            draft.currentBrain = formatData[0];
+          })
+        }
+
       };
       init();
     },

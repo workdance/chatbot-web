@@ -40,7 +40,7 @@ const ChatScrollAnchor = memo(() => {
   const isAtBottom = useAtBottom(scrollOffset);
 
   useEffect(() => {
-    console.log('isAtBottom', isAtBottom);
+    // console.log('isAtBottom', isAtBottom);
     if (isAtBottom && trackVisibility && !inView) {
       entry?.target.scrollIntoView({
         block: 'start',

@@ -12,7 +12,7 @@ export type ChatQuestion = {
   question: string;
   temperature?: number;
   max_tokens?: number;
-  brain_id?: string;
+  brain_id: string;
   prompt_id?: string;
 };
 export type ChatMessage = { // 一问一答是对话的基本单位
@@ -78,11 +78,21 @@ export type ChatHistoryEntity = {
 
 export type BrainEntity = {
   id: string;
-  brainId: UUID;
+  brainId: string;
   name: string;
+  model?: string;
   description: string;
   brainType: string;
   userId?: string;
+  gmtCreate: string;
+  gmtModified: string;
+};
+
+export type KnowledgeEntity = {
+  id: string;
+  name: string;
+  brainId: UUID;
+  url: string;
   gmtCreate: string;
   gmtModified: string;
 };
