@@ -22,7 +22,7 @@ const ChatScrollAnchor = memo(() => {
 
   const { ref, entry, inView } = useInView({
     delay: 100,
-    rootMargin: '0px 0px -100px 0px',
+    rootMargin: '0px 0px -120px 0px',
     trackVisibility,
   });
 

@@ -1,6 +1,6 @@
 
 import React, { } from 'react';
-import { Message } from '@/components/Message';
+import { MarkdownMessage, Message } from '@/components/Message';
 import Typing from '@/components/Typing';
 import { Col, Flex, Row } from 'antd';
 import { aiDefaultAvatar, userAvatar } from './constant';
@@ -37,9 +37,9 @@ const RobotMessage = (props: {
     return null;
   }
   return <div className={styles.messageWrap}>
-    <Message avatar={aiDefaultAvatar}   >
+    <MarkdownMessage avatar={chatMessage.brainLogo || aiDefaultAvatar} header={<p>{chatMessage.brainName}</p>}>
       {chatMessage.assistant}
-    </Message>
+    </MarkdownMessage>
   </div>
 }
 

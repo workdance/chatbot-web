@@ -60,8 +60,8 @@ export default () => {
 
           }}
         />
-        {brainViewModel.currentBrain.brainId ?
-          <div className={styles.mentionWrap}>你正在跟<strong>&nbsp;[{brainViewModel.currentBrain.name}]&nbsp;</strong>聊天</div> :
+        {brainViewModel.currentBrain?.brainId ?
+          <div className={styles.mentionWrap}>你正在跟<strong>&nbsp;[{brainViewModel.currentBrain.model}]&nbsp;</strong>聊天</div> :
           <div className={styles.mentionWrap}>你可以通过来选择不同的大脑来对话</div>}
       </div>
     </div>

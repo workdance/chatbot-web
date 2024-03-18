@@ -1,4 +1,4 @@
-import { getLoginName } from "./common";
+import { getLoginName, getWorkId } from "./common";
 
 export default (initialState: API.UserInfo) => {
   // 在这里按照初始化数据定义项目中的权限，统一管理
@@ -6,7 +6,7 @@ export default (initialState: API.UserInfo) => {
   const canSeeAdmin = !!(
     initialState && initialState.name !== 'dontHaveAccess'
   );
-  const canUse = getLoginName() !== '';
+  const canUse = getLoginName() !== '' && getWorkId() !== '';
   return {
     canSeeAdmin,
     canUse,

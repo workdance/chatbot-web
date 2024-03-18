@@ -7,6 +7,7 @@ import { generatePlaceHolderMessage, getChatNameFromQuestion } from '../utils';
 import { useModel } from '@umijs/max';
 import { useParams } from '@umijs/max';
 import { createChatHistory, modifyChatHistory } from '@/services/ChatHistoryController';
+import { message } from 'antd';
 
 export default function useChatInputViewModel() {
   const [chatInputView, updateChatInputView] = useImmer({
@@ -27,15 +28,20 @@ export default function useChatInputViewModel() {
     chatId: string,
     chatQuestion: ChatQuestion,
   ) => {
-    const { data } = await createChatHistory({
+    const { data, success } = await createChatHistory({
       chatId,
       question: chatQuestion.question,
       brainId: chatQuestion.brain_id,
     });
 
+    if (!success) {
+      message.error(`创建对话历史失败.`);
+    }
+
     const placeHolderMessage = generatePlaceHolderMessage({
       userMessage: chatQuestion.question ?? '',
       chatId,
+      brainName: chatQuestion.brainName || 'AI',
     });
 
     updateStreamingHistory(placeHolderMessage);
@@ -70,13 +76,14 @@ export default function useChatInputViewModel() {
           chatId: chatId,
           messageId: data.messageId,
           question: chatQuestion.question || '',
+          brainName: chatQuestion.brainName || 'AI',
         },
         () => console.error(placeHolderMessage.messageId),
         (assistant: string) => {
           // 3.0 流执行完毕后，把完整的流数据传递给 prod 落库，更新 chatHistory 的 assistant 字段
           // console.log('allChunk', assistant);
           const param = {
-            messageId: data.messageId,
+            messageId: data && data.messageId,
             assistant,
           };
           modifyChatHistory(param, param);
@@ -127,6 +134,7 @@ export default function useChatInputViewModel() {
         // temperature: temperature,
         // max_tokens: maxTokens,
         brain_id: brainViewModel.currentBrain?.brainId,
+        brainName: brainViewModel.currentBrain?.name,
         // prompt_id: currentPromptId ?? undefined,
       };
 

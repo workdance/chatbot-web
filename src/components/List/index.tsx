@@ -144,7 +144,7 @@ export default (props: ListProps) => {
               type="secondary"
               className={`${cls('rightCheck')}`}
             >
-              [当前会话]{value}
+              [当前]{value}
             </Typography.Text>
           </Button>
           <div className={`${style['list']}__oper`}>

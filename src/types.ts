@@ -10,6 +10,7 @@ export type ChatQuestion = {
   id?: string;
   model?: string;
   question: string;
+  brainName?: string;
   temperature?: number;
   max_tokens?: number;
   brain_id: string;
@@ -23,7 +24,8 @@ export type ChatMessage = { // 一问一答是对话的基本单位
   assistant: string;
   message_time?: string;
   prompt_title?: string;
-  brain_name?: string;
+  brainName?: string;
+  brainLogo?: string;
   brain_id?: UUID;
   metadata?: any
 };

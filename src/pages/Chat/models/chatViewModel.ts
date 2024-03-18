@@ -1,5 +1,6 @@
 import { useImmer } from "use-immer";
 import { ChatMessage } from '../../../types';
+import { useModel } from "@umijs/max";
 
 export default function useChatViewModel() {
   const [chatViewModel, updateChatViewModel] = useImmer({
@@ -7,6 +8,7 @@ export default function useChatViewModel() {
     isChatting: false,
     chatMessageList: [] as ChatMessage[],
   });
+  
 
   /**
    * 更新聊天记录列表
@@ -29,7 +31,6 @@ export default function useChatViewModel() {
       : [...prevHistory, streamedChat];
 
 
-    console.info('updatedHistoryupdatedHistory', updatedHistory)
     updateChatViewModel((draft) => {
       draft.chatMessageList = updatedHistory;
     });

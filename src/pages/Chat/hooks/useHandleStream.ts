@@ -11,6 +11,7 @@ export const useHandleStream = () => {
       chatId: string;
       messageId: string;
       question: string;
+      brainName: string;
     },
     onFirstChunk: () => void,
     onStreamDone: (allChunk: string) => void,
@@ -20,7 +21,6 @@ export const useHandleStream = () => {
     let incompleteData = '';
     let assistantChunk = '';
 
-    console.info('handleStreamhandleStream', reader);
     const handleStreamRecursively = async () => {
       while (true) {
         const { done, value } = await reader.read();
@@ -49,13 +49,14 @@ export const useHandleStream = () => {
             }
             try {
               const parsedData = JSON.parse(data) as ChatMessage;
-              console.info(parsedData);
+              // console.info(parsedData);
               assistantChunk+=parsedData.assistant;
               updateStreamingHistory({
                 assistant: assistantChunk,
                 messageId: args.messageId,
                 chatId: args.chatId,
                 userMessage: args.question,
+                brainName: args.brainName,
               });
             } catch (e) {
               console.error('Error parsing data string', e);
@@ -78,6 +79,7 @@ export const useHandleStream = () => {
               assistant: assistantChunk,
               userMessage: args.question,
               messageId: args.messageId,
+              brainName: args.brainName,
             });
           }
         }

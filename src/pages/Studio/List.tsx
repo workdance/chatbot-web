@@ -6,16 +6,16 @@ import React from 'react';
 import { BrainEntity } from '../../types';
 
 export default () => {
-  const { brainListViewModel, updateBrainListViewModel, renderBrainList } = useModel('Studio.brainListViewModel');
+  const { brainListViewModel, renderBrainList } = useModel('Studio.brainListViewModel');
 
   useEffect(() => {
-    renderBrainList({ brainId: '' });
+    renderBrainList();
   }, []);
   
   return (
     <ProList<BrainEntity>
       rowKey="id"
-      headerTitle="知识库列表"
+      headerTitle="大脑列表"
       dataSource={brainListViewModel.brainList}
       showActions="hover"
       toolBarRender={() => {
@@ -43,20 +43,28 @@ export default () => {
           editable: false,
         },
         description: {
-          dataIndex: 'description',
+          render: (_, record) => {
+            return <>
+              <Space size={0}>
+                简介：{record.description}
+              </Space>
+                
+            </>
+          },
         },
         subTitle: {
           dataIndex: 'brainType',
           render: (_, record) => {
             return (
               <Space size={0}>
-                <Tag color="blue">{record.brainType}</Tag>
+                <Tag color="blue">大脑类型:{record.brainType}</Tag>
+                <Tag color="green">模型：{record.model}</Tag>
               </Space>
             );
           },
         },
         actions: {
-          render: (text, row, index, action) => [
+          render: (text, row) => [
             <Link to={`/studio/${row.brainId}`} key="link">编辑</Link>
           ],
         },

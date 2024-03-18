@@ -2,18 +2,12 @@ import type { ProFormInstance } from '@ant-design/pro-components';
 import {
   CheckCard,
   ProCard,
-  ProForm,
-  ProFormCheckbox,
-  ProFormDatePicker,
-  ProFormDateRangePicker,
-  ProFormSelect,
   ProFormText,
   ProFormTextArea,
   StepsForm,
 } from '@ant-design/pro-components';
 import { message } from 'antd';
 import { useRef } from 'react';
-import React from 'react';
 import { createBrain } from '@/services/BrainController';
 import { history } from '@umijs/max';
 
@@ -67,7 +61,7 @@ export default () => {
           name: string;
         }>
           name="brainType"
-          title="选择类型"
+          title="选择大脑类型"
           onFinish={async () => {
             console.log(formRef.current?.getFieldsValue());
             
@@ -83,11 +77,12 @@ export default () => {
             }}
             defaultValue="A"
           >
-            <CheckCard title="本地知识库" description="上传文档或者网站链接" value="doc" />
+            <CheckCard title="基础知识库" description="直接调用大模型本身的知识库回答问题" value="basic" />
+            <CheckCard title="本地知识库" description="上传本地文件给大模型用于理解并回答相关问题" value="doc" />
             <CheckCard
               title="远程知识库"
               disabled
-              description="通过 API 调用远程大脑（暂不支持）"
+              description="根据知识库内容进行 API 调用回答问题"
               value="api"
             />
           </CheckCard.Group>
@@ -106,7 +101,7 @@ export default () => {
         >
           <ProFormText
             name="name"
-            label="知识库名称"
+            label="大脑名称"
             width="md"
             tooltip="最长为 24 位，用于标定的唯一 id"
             placeholder="请输入名称"
@@ -114,7 +109,7 @@ export default () => {
           />
           <ProFormTextArea
             name="description"
-            label="知识库描述"
+            label="大脑描述"
             width="lg"
             placeholder="请输入备注"
           />

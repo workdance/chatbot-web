@@ -1,3 +1,4 @@
+import { getWorkId } from '@/common';
 import { BrainEntity } from '@/types';
 import { request } from '@umijs/max';
 
@@ -20,7 +21,10 @@ export async function queryBrainList(
 ) {
   return request<IBrainListResponse>(`/api/v1/brain/list`, {
     method: 'POST',
-    data: { ...params },
+    data: { 
+      userId: getWorkId(),
+      ...params,
+    },
     ...(options || {}),
   });
 }
@@ -86,6 +90,20 @@ export async function getBrainDetail(
   return request<IBrainResponse>(`/api/v1/brain/${param0}`, {
     method: 'GET',
     params: { ...params },
+    ...(options || {}),
+  });
+}
+
+
+export async function deleteVectorStoreByBrainId(
+  params: {
+    brain_id: string;
+  },
+  options?: { [key: string]: any },
+) {
+  return request(`/ai/brain/deleteVectorStore`, {
+    method: 'POST',
+    data: { ...params },
     ...(options || {}),
   });
 }

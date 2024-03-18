@@ -4,7 +4,7 @@ import {
   ProFormText,
   ProList,
 } from '@ant-design/pro-components';
-import { Divider, List, Skeleton, Space, Tabs, TabsProps, Tag, Typography, Upload, UploadProps, message } from 'antd';
+import { Divider, List, Result, Skeleton, Space, Tabs, TabsProps, Tag, Typography, Upload, UploadProps, message } from 'antd';
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { useModel, useParams } from '@umijs/max';
@@ -12,6 +12,7 @@ import styles from './index.module.less'
 import { InboxOutlined } from '@ant-design/icons';
 import { UPLOAD_URL } from '@/constants';
 import { createKnowledge } from '@/services/KnowledgeController';
+import { BrainType } from './models/brainViewModel';
 const { Dragger } = Upload;
 
 const onChange = (key: string) => {
@@ -49,6 +50,7 @@ const SettingTabPanel = () => {
         name: brainViewModel.brain.name,
         description: brainViewModel.brain.description,
         model: brainViewModel.brain.model,
+        brainType: brainViewModel.brain.brainType,
         useMode: 'chapter',
       }}
     >
@@ -57,8 +59,16 @@ const SettingTabPanel = () => {
           width="md"
           name="name"
           label="大脑名称"
-          tooltip="最长为 24 位"
           placeholder="请输入名称"
+        />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormText
+          width="md"
+          name="brainType"
+          label="大脑类型"
+          tooltip="无法修改"
+          disabled
         />
       </ProForm.Group>
       <ProForm.Group>
@@ -148,6 +158,13 @@ const KnowledgePanel = () => {
     })
   }
 
+  if (brainViewModel.brain.brainType === BrainType.BASIC) {
+    return <Result
+      status="warning"
+      title="该大脑不支持上传知识库"
+    />
+  }
+
 
   return <div className={styles.knowledgePanel}>
     <Divider>上传区</Divider>
@@ -162,7 +179,7 @@ const KnowledgePanel = () => {
     </Dragger>
     <Divider>已上传的文件</Divider>
     <List
-      bordered
+      
       dataSource={knowledgeModel.list}
       renderItem={(item) => (
         <List.Item
@@ -170,7 +187,7 @@ const KnowledgePanel = () => {
             handleDelteKnowledge(item.id)
           }}>删除</a>]}
         >
-        {item.name}
+          {item.name}
         </List.Item>
       )}
     />

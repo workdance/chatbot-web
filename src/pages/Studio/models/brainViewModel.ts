@@ -11,6 +11,12 @@ export enum Operate {
   revise = 'revise',
 }
 
+export enum BrainType {
+  BASIC = 'BASIC',
+  DOC = 'DOC',
+  API = 'API',
+}
+
 async function removeBrainById({ id }: { id: string | undefined }) {
   // const removeOk = await removeBrain({
   //   id: id,

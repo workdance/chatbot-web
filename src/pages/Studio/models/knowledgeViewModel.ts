@@ -3,6 +3,7 @@ import { queryKnowledgeList, updateKnowledgeItemById, removeKnowledge} from '@/s
 import moment from 'moment';
 import { useCallback } from 'react';
 import { useImmer } from 'use-immer';
+import { deleteVectorStoreByBrainId } from '@/services/BrainController';
 
 export enum Operate {
   checked = 'checked',
@@ -54,6 +55,10 @@ export default function useKnowledgeViewModel() {
     if (removeOk.success) {
       console.log('remove success');
       renderKnowledge({ brainId: brainId });
+      // 清理 aiserver 的向量缓存
+      deleteVectorStoreByBrainId({
+        brain_id: brainId,
+      })
     }
   }
 

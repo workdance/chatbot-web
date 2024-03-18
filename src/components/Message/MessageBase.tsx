@@ -11,6 +11,8 @@ export interface MessageBaseProps {
   direction?: 'left' | 'right';
   /** 头像 */
   avatar?: string;
+  /** 头像名称 */
+  avatarTitle?: string;
   /** 消息操作 */
   actions?: ReactNode;
   /** 消息底部 */
@@ -42,6 +44,7 @@ const MessageBase: React.FunctionComponent<MessageBaseProps> = (props) => {
   const {
     direction = 'left',
     avatar,
+    avatarTitle,
     actions,
     footer,
     header,
@@ -130,6 +133,7 @@ const MessageBase: React.FunctionComponent<MessageBaseProps> = (props) => {
     return (
       <div className={`${styles.message}__avatar`}>
         <Avatar style={{background: 'transparent'}} src={avatar}>{}</Avatar>
+        { avatarTitle && <div className={`${styles.message}__avatar__typing`}>{avatarTitle}</div>}
       </div>
     );
   }
