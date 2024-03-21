@@ -37,7 +37,9 @@ const RobotMessage = (props: {
     return null;
   }
   return <div className={styles.messageWrap}>
-    <MarkdownMessage avatar={chatMessage.brainLogo || aiDefaultAvatar} header={<p>{chatMessage.brainName}</p>}>
+    <MarkdownMessage avatar={chatMessage.brainLogo || aiDefaultAvatar} header={<p>
+        <a title="查看大脑详情" target="_blank" href={`/studio/${chatMessage.brainId}`} rel="noreferrer">{chatMessage.brainName}</a>
+      </p>}>
       {chatMessage.assistant}
     </MarkdownMessage>
   </div>

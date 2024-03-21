@@ -60,6 +60,20 @@ export async function updateBrainItemById(
     ...(options || {}),
   });
 }
+export async function removeBrain(
+  params: {
+    // path
+    id: string;
+  },
+  options?: { [key: string]: any },
+) {
+  const { id: brainId } = params;
+  return request(`/api/v1/brain/${brainId}`, {
+    method: 'DELETE',
+    data: { ...params },
+    ...(options || {}),
+  });
+}
 
 export async function createBrain(
   body?: {
@@ -74,7 +88,10 @@ export async function createBrain(
     headers: {
       'Content-Type': 'application/json',
     },
-    data: body,
+    data: {
+      ...body,
+      userId: getWorkId(),
+    },
     ...(options || {}),
   });
 }

@@ -1,10 +1,11 @@
 import { BrainEntity } from '@/types';
-import { queryBrainList } from '@/services/BrainController';
+import { queryBrainList, removeBrain } from '@/services/BrainController';
 import { history } from '@umijs/max';
 import moment from 'moment';
 import { useCallback } from 'react';
 import { useImmer } from 'use-immer';
 import { useModel } from '@umijs/max';
+import { message } from 'antd';
 
 export enum Operate {
   checked = 'checked',
@@ -12,17 +13,6 @@ export enum Operate {
   revise = 'revise',
 }
 
-async function removeBrainListById({ id }: { id: string | undefined }) {
-  // const removeOk = await removeBrainList({
-  //   id: id,
-  // });
-
-  // if (removeOk.success) {
-  //   console.log('remove success');
-  //   history.push(`/Brain`);
-  // }
-  // return removeOk.success;
-}
 
 export default function useBrainListViewModel() {
   const { brainViewModel, updateBrainViewModel } = useModel('Studio.brainViewModel');
@@ -92,10 +82,26 @@ export default function useBrainListViewModel() {
     console.log('extra', extra);
   };
 
+
+  async function removeBrainById({ id }: { id: string | undefined }) {
+    const removeOk = await removeBrain({
+      id: id,
+    });
+
+    if (removeOk.success) {
+      console.log('remove success');
+      message.success('删除成功');
+      renderBrainList()
+    }
+
+    return removeOk.success;
+    
+  }
   return {
     brainListViewModel,
     updateBrainListViewModel,
     renderBrainList,
     handleItemClick,
+    removeBrainById
   };
 }

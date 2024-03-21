@@ -26,7 +26,7 @@ export type ChatMessage = { // 一问一答是对话的基本单位
   prompt_title?: string;
   brainName?: string;
   brainLogo?: string;
-  brain_id?: UUID;
+  brainId?: UUID;
   metadata?: any
 };
 

@@ -12,11 +12,11 @@ export default defineConfig({
   },
   proxy: {
     '/api': {
-      target: 'http://demo.test.alipay.net:8080/',
+      target: 'http://demo.dev.alipay.net:8080/',
       'pathRewrite': { '^/api' : '/api' },
     },
     '/ai': {
-      target: 'http://demo.test.alipay.net:5050/',
+      target: 'http://demo.dev.alipay.net:5050/',
       'pathRewrite': { '^/ai' : '' },
       changeOrigin: true,
       onProxyReq: (proxyRes, req, res) => {

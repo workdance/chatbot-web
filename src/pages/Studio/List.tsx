@@ -6,11 +6,17 @@ import React from 'react';
 import { BrainEntity } from '../../types';
 
 export default () => {
-  const { brainListViewModel, renderBrainList } = useModel('Studio.brainListViewModel');
+  const { brainListViewModel, renderBrainList, removeBrainById } = useModel('Studio.brainListViewModel');
 
   useEffect(() => {
     renderBrainList();
   }, []);
+
+  const handleClickDelete = (id) => {
+    removeBrainById({
+      id,
+    })
+  }
   
   return (
     <ProList<BrainEntity>
@@ -65,7 +71,8 @@ export default () => {
         },
         actions: {
           render: (text, row) => [
-            <Link to={`/studio/${row.brainId}`} key="link">编辑</Link>
+            <Link to={`/studio/${row.brainId}`} key="link">编辑</Link>,
+            <a key="delete" onClick={() => { handleClickDelete(row.id)}}>删除</a>
           ],
         },
       }}

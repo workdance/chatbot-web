@@ -1,5 +1,5 @@
 import { getWorkId } from '@/common';
-import { AI_SERVER_URL } from '@/pages/Chat/constant';
+import { AI_SERVER_URL } from '@/constants';
 import { ChatEntity } from '@/types';
 import { request } from '@umijs/max';
 

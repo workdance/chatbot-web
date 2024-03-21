@@ -1,15 +1,15 @@
 import { useImmer } from 'use-immer';
 import { history } from '@umijs/max';
-import { createChat, chatToOllama, chatToOllamaGet, chatWithQuestion } from '@/services/ChatController';
+import { createChat, chatWithQuestion } from '@/services/ChatController';
 import { useHandleStream } from '../hooks/useHandleStream';
 import { ChatQuestion } from '../../../types';
 import { generatePlaceHolderMessage, getChatNameFromQuestion } from '../utils';
 import { useModel } from '@umijs/max';
 import { useParams } from '@umijs/max';
 import { createChatHistory, modifyChatHistory } from '@/services/ChatHistoryController';
-import { message } from 'antd';
 
 export default function useChatInputViewModel() {
+  const { showErrorMessage } = useModel('global'); 
   const [chatInputView, updateChatInputView] = useImmer({
     generatingAnswer: false,
     message: '',
@@ -124,6 +124,10 @@ export default function useChatInputViewModel() {
           history.push(`/chat/${currentChatId}`);
           // renderChatList({ chatId: currentChatId });
         }
+      }
+      if (!brainViewModel.currentBrain || !brainViewModel.currentBrain.brainId) {
+        showErrorMessage('请先创建 AI 大脑并选择对应模型再聊天');
+        return;
       }
 
 
